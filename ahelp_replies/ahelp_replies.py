@@ -15,8 +15,8 @@ class Input(discord.ui.Modal, title='Input server details'):
     display_name = discord.ui.TextInput(label='Display Name',
                                  placeholder='Grimbly Station',
                                  required = True)
-    server_ip = discord.ui.TextInput(label='Server IP',
-                                 placeholder='localhost:1212 (DO NOT USE A DOMAIN)',
+    server_address = discord.ui.TextInput(label='Server Adress',
+                                 placeholder='http://localhost:1212',
                                  required=True)
     token = discord.ui.TextInput(label='API Token',
                                  placeholder='Server\'s api.token value in server_config.toml',
@@ -93,7 +93,7 @@ async def send_reply(session: aiohttp.ClientSession, message: Message, server, u
         })
         
         session.headers['Authorization'] = f'SS14Token {server["token"]}'
-        async with session.post(f'http://{server["server_ip"]}/admin/actions/send_bwoink', data = data) as resp:
+        async with session.post(f'{server["server_address"]}/admin/actions/send_bwoink', data = data) as resp:
             return resp.status, await resp.text()
 
     return await asyncio.wait_for(
@@ -216,7 +216,7 @@ class ahelp_replies(commands.Cog):
                 return
 
             cur_servers[view.modal.identifier.value] = {
-                "server_ip": view.modal.server_ip.value,
+                "server_address": view.modal.server_address.value,
                 "display_name": view.modal.display_name.value,
                 "token": view.modal.token.value
             }
