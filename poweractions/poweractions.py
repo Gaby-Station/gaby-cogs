@@ -162,6 +162,46 @@ class poweractions(commands.Cog):
 
     @checks.admin()
     @commands.hybrid_command()
+    async def startserver(self, ctx: commands.Context, server: Optional[str]) -> None;
+        """
+        Starts a server.
+
+        `<server>`: The name of the server to start.
+        """
+        if not server:
+            await self.list(ctx)
+            return
+
+        async with ctx.typing():
+            foundServer = await self.get_server_from_arg(ctx, server)
+            if foundServer is None:
+                return
+
+            servername, server = foundServer
+
+            async with aiohttp.ClientSession() as session:
+                try:
+                    status, response = await doaction(session, server, "start")
+                    if status != 200:
+                        await ctx.send(f"Failed to start the server. Wrong status code: {status}")
+                        log.debug(f"Failed to start {servername}. Wrong status code: {status} Response: {response}")
+                        return
+
+                except asyncio.TimeoutError:
+                    await ctx.send("Server timed out.")
+                    return
+
+                except Exception:
+                    await ctx.send(
+                        f"An Unknown error occured while trying to start this server, Logging to console...")
+                    log.exception(
+                        f"An error occurred while trying start server {servername}.")
+                    return
+
+            await ctx.send("Server started successfully.")
+
+    @checks.admin()
+    @commands.hybrid_command()
     async def restartserver(self, ctx: commands.Context, server: Optional[str]) -> None:
         """
         Restarts a server.
