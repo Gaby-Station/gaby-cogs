@@ -162,7 +162,7 @@ class poweractions(commands.Cog):
 
     @checks.admin()
     @commands.hybrid_command()
-    async def startserver(self, ctx: commands.Context, server: Optional[str]) -> None;
+    async def startserver(self, ctx: commands.Context, server: Optional[str]) -> None:
         """
         Starts a server.
 
